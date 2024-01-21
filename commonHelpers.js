@@ -1,10 +1,10 @@
-import{i as l,S as d}from"./assets/vendor-46aac873.js";(function(){const s=document.createElement("link").relList;if(s&&s.supports&&s.supports("modulepreload"))return;for(const e of document.querySelectorAll('link[rel="modulepreload"]'))t(e);new MutationObserver(e=>{for(const r of e)if(r.type==="childList")for(const a of r.addedNodes)a.tagName==="LINK"&&a.rel==="modulepreload"&&t(a)}).observe(document,{childList:!0,subtree:!0});function i(e){const r={};return e.integrity&&(r.integrity=e.integrity),e.referrerpolicy&&(r.referrerPolicy=e.referrerpolicy),e.crossorigin==="use-credentials"?r.credentials="include":e.crossorigin==="anonymous"?r.credentials="omit":r.credentials="same-origin",r}function t(e){if(e.ep)return;e.ep=!0;const r=i(e);fetch(e.href,r)}})();const c="/goit-js-hw-12/assets/bi_x-octagon-aed43fc7.svg",n=document.querySelector("form"),p=document.querySelector("textarea"),f=document.querySelector(".gallery"),u=document.querySelector("span");n.addEventListener("submit",o=>{o.preventDefault(),u.classList.add("loader"),f.textContent="";const s=p.value;y(s),n.reset()});function y(o){const i=`https://pixabay.com/api/?${new URLSearchParams({key:"41764698-0ccaaf72f9cf319226b6a04c5",q:o,image_type:"photo",orientation:"horizontal",safesearch:!0})}`;fetch(i).then(t=>{if(!t.ok)throw new Error(t.status);return t.json()}).then(t=>{let e=t.hits;if(e.length==0){L();return}w(e)}).catch(t=>{console.log(t);const e=t.message;b(e)}).finally(()=>u.classList.remove("loader"))}function L(){l.error({message:"Sorry, there are no images matching<br/>your search query. Please try again!",position:"topRight",backgroundColor:"#EF4040",messageColor:"#fff",iconUrl:c})}function b(o){l.error({message:`Error: ${o}. Please try again!`,position:"topRight",backgroundColor:"#EF4040",messageColor:"#fff",iconUrl:c})}function w(o){const s=o.map(({webformatURL:t,largeImageURL:e,tags:r,likes:a,views:m,comments:g,downloads:h})=>`
+import{a as n,i as c,S as y}from"./assets/vendor-89feecc5.js";(function(){const s=document.createElement("link").relList;if(s&&s.supports&&s.supports("modulepreload"))return;for(const e of document.querySelectorAll('link[rel="modulepreload"]'))i(e);new MutationObserver(e=>{for(const t of e)if(t.type==="childList")for(const a of t.addedNodes)a.tagName==="LINK"&&a.rel==="modulepreload"&&i(a)}).observe(document,{childList:!0,subtree:!0});function o(e){const t={};return e.integrity&&(t.integrity=e.integrity),e.referrerpolicy&&(t.referrerPolicy=e.referrerpolicy),e.crossorigin==="use-credentials"?t.credentials="include":e.crossorigin==="anonymous"?t.credentials="omit":t.credentials="same-origin",t}function i(e){if(e.ep)return;e.ep=!0;const t=o(e);fetch(e.href,t)}})();const f="/goit-js-hw-12/assets/bi_x-octagon-aed43fc7.svg",l=document.querySelector("form"),h=document.querySelector("textarea"),u=document.querySelector(".gallery"),m=document.querySelector("span");l.addEventListener("submit",r=>{r.preventDefault(),m.classList.add("loader"),u.textContent="";const s=h.value;L(s),l.reset()});async function L(r){n.defaults.baseURL="https://pixabay.com/api";try{const o=(await n.get("",{params:{key:"41764698-0ccaaf72f9cf319226b6a04c5",q:r,image_type:"photo",orientation:"horizontal",safesearch:!0}})).data.hits;if(o.length==0){b();return}v(o)}catch(s){console.log(s);const o=s.message;x(o)}m.classList.remove("loader")}function b(){c.error({message:"Sorry, there are no images matching<br/>your search query. Please try again!",position:"topRight",backgroundColor:"#EF4040",messageColor:"#fff",iconUrl:f})}function x(r){c.error({message:`Error: ${r}. Please try again!`,position:"topRight",backgroundColor:"#EF4040",messageColor:"#fff",iconUrl:f})}function v(r){const s=r.map(({webformatURL:i,largeImageURL:e,tags:t,likes:a,views:g,comments:d,downloads:p})=>`
         <li class="gallery-item">
             <a class="gallery-link" href="${e}">
             <img
                 class="gallery-image"
-                src="${t}"
-                alt="${r}"
+                src="${i}"
+                alt="${t}"
             />
             </a>
             <ul class="statistics">
@@ -14,17 +14,17 @@ import{i as l,S as d}from"./assets/vendor-46aac873.js";(function(){const s=docum
                 </li>
                 <li class="statistics-item">
                     <h2>Views</h2>
-                    <p>${m}</p>
-                </li>
-                <li class="statistics-item">
-                    <h2>Comments</h2>
                     <p>${g}</p>
                 </li>
                 <li class="statistics-item">
+                    <h2>Comments</h2>
+                    <p>${d}</p>
+                </li>
+                <li class="statistics-item">
                     <h2>Downloads</h2>
-                    <p>${h}</p>
+                    <p>${p}</p>
                 </li>
             </ul>
         </li>
-        `).join("");f.insertAdjacentHTML("beforeend",s),new d(".gallery a",{captionsData:"alt",captionDelay:250}).refresh()}
+        `).join("");u.insertAdjacentHTML("beforeend",s),new y(".gallery a",{captionsData:"alt",captionDelay:250}).refresh()}
 //# sourceMappingURL=commonHelpers.js.map
