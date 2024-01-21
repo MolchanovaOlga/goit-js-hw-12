@@ -4,6 +4,8 @@ import "izitoast/dist/css/iziToast.min.css";
 import SimpleLightbox from "simplelightbox";
 import "simplelightbox/dist/simple-lightbox.min.css";
 
+import axios from 'axios';
+
 import icon from './img/icons/bi_x-octagon.svg';
 
 const form = document.querySelector('form');
@@ -23,38 +25,31 @@ form.addEventListener('submit', event => {
 });
 
 
-function fetchImages(value) {  
-    const searchParams = new URLSearchParams({
-        key: "41764698-0ccaaf72f9cf319226b6a04c5",
-        q: value,
-        image_type: "photo",
-        orientation: "horizontal",
-        safesearch: true,
-    });
-
-    const url = `https://pixabay.com/api/?${searchParams}`;
-
-    fetch(url).then(
-        response => {
-            if (!response.ok) {
-                throw new Error(response.status);
+async function fetchImages(value) {  
+    axios.defaults.baseURL = "https://pixabay.com/api";
+    try {
+        const response = await axios.get('', {
+            params: {
+                key: "41764698-0ccaaf72f9cf319226b6a04c5",
+                q: value,
+                image_type: "photo",
+                orientation: "horizontal",
+                safesearch: true,
             }
-            return response.json()
-        })
-        .then(data => {
-            let arrayOfImg = data.hits;
-            if (arrayOfImg.length == 0) {
-                noImages();
-                return;
-            }
-            createGallery(arrayOfImg);
-        })
-        .catch(error => {
-            console.log(error);
-            const errText = error.message;
-            errorMessage(errText);
-        })
-        .finally(() => loader.classList.remove("loader"));
+        });
+        const arrayOfImg = response.data.hits;
+        if (arrayOfImg.length == 0) {
+            noImages();
+            return;
+        }
+        createGallery(arrayOfImg);
+    } catch(error) {
+        console.log(error);
+        const errText = error.message;
+        errorMessage(errText);
+    };
+
+    loader.classList.remove("loader");
 };
 
 function noImages() {
