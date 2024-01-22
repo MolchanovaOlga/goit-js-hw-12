@@ -26,9 +26,9 @@ form.addEventListener('submit', event => {
 
 
 async function fetchImages(value) {  
-    axios.defaults.baseURL = "https://pixabay.com/api";
+    axios.defaults.baseURL = "https://pixabay.com";
     try {
-        const response = await axios.get('', {
+        const response = await axios.get('/api/', {
             params: {
                 key: "41764698-0ccaaf72f9cf319226b6a04c5",
                 q: value,
