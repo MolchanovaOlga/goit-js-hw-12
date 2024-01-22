@@ -110,6 +110,11 @@ button:focus {
   width: 100%;
 }
 
+.load-more { 
+  display: none;
+  margin: 0 auto 36px;
+}
+
 /*     ------ statistics ------      */
 
 .statistics {

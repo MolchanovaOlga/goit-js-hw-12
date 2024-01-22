@@ -12,44 +12,59 @@ const form = document.querySelector('form');
 const textArea = document.querySelector('textarea');
 const gallery = document.querySelector('.gallery');
 const loader = document.querySelector('span');
+const loadMoreBtn = document.querySelector('.load-more');
+
+let counter = 1;
+let perPage = 40;
 
 form.addEventListener('submit', event => {
     event.preventDefault();
     loader.classList.add("loader");
     gallery.textContent = '';
-    
-    const valueOfTextarea = textArea.value;
-    fetchImages(valueOfTextarea);
+    loadMoreBtn.style.display = 'none';
+    fetchImages();
 
     form.reset();
 });
 
-
-async function fetchImages(value) {  
+async function getData() {
     axios.defaults.baseURL = "https://pixabay.com";
+    return await axios.get('/api/', {
+        params: {
+            key: "41764698-0ccaaf72f9cf319226b6a04c5",
+            q: textArea.value,
+            image_type: "photo",
+            orientation: "horizontal",
+            safesearch: true,
+            page: counter,
+            per_page: perPage,
+        }
+    });
+}
+
+async function fetchImages() {  
     try {
-        const response = await axios.get('/api/', {
-            params: {
-                key: "41764698-0ccaaf72f9cf319226b6a04c5",
-                q: value,
-                image_type: "photo",
-                orientation: "horizontal",
-                safesearch: true,
-            }
-        });
+        const response = await getData();
         const arrayOfImg = response.data.hits;
         if (arrayOfImg.length == 0) {
-            noImages();
-            return;
+            return noImages();
         }
+
         createGallery(arrayOfImg);
+        if (arrayOfImg.length >= perPage) {
+            loadMoreBtn.style.display = 'flex';
+            loadMoreBtn.addEventListener('click', () => {
+                counter += 1;
+            })
+        }
+
     } catch(error) {
         console.log(error);
         const errText = error.message;
         errorMessage(errText);
-    };
-
-    loader.classList.remove("loader");
+    } finally {
+        loader.classList.remove("loader");
+    }
 };
 
 function noImages() {
