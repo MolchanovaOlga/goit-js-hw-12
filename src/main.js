@@ -15,7 +15,7 @@ const loader = document.querySelector('span');
 const loadMoreBtn = document.querySelector('.load-more');
 
 let counter = 1;
-let perPage = 3;
+let perPage = 40;
 
 form.addEventListener('submit', event => {
     event.preventDefault();
@@ -44,10 +44,12 @@ async function getData(val) {
 
 async function fetchImages() {  
     try {
-        let valueOfTextarea = textArea.value;
+        const valueOfTextarea = textArea.value;
         const response = await getData(valueOfTextarea);
         const arrayOfImg = response.data.hits;
-
+        const totalPages = Math.ceil(response.data.totalHits / perPage);
+        console.log(totalPages);
+        console.log(response.data.totalHits);
         if (arrayOfImg.length == 0) {
             return noImages();
         }
@@ -59,7 +61,7 @@ async function fetchImages() {
             loadMoreBtn.addEventListener('click', () => {
                 loadMoreBtn.style.display = 'none';
                 loader.classList.add("loader");
-                getLoadMore(valueOfTextarea);
+                getLoadMore(valueOfTextarea, totalPages);
             });
         }
 
@@ -72,13 +74,18 @@ async function fetchImages() {
     }
 };
 
-async function getLoadMore(val) {
+async function getLoadMore(val, num) {
+    counter += 1;
     try {
-        counter += 1;
         const response = await getData(val);
         const arrayOfImg = response.data.hits;
         createGallery(arrayOfImg);
         loadMoreBtn.style.display = 'flex';
+            
+        if (counter >= num) {
+            loadMoreBtn.style.display = 'none';
+            return endResults();
+        }
 
     } catch(error) {
         console.log(error);
@@ -108,6 +115,17 @@ function errorMessage(err) {
       iconUrl: icon,
     });
 }
+
+function endResults() {
+    loadMoreBtn.style.display = 'none';
+    iziToast.error({
+        message: "We're sorry, but you've reached the end of search results.",
+        position: "topRight",
+        backgroundColor: "#EF4040",
+        messageColor: '#fff',
+        iconUrl: icon,
+      });
+};
   
 function createGallery(arr) {
 
