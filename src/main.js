@@ -15,7 +15,7 @@ const loader = document.querySelector('span');
 const loadMoreBtn = document.querySelector('.load-more');
 
 let counter = 1;
-let perPage = 40;
+let perPage = 3;
 
 form.addEventListener('submit', event => {
     event.preventDefault();
@@ -23,16 +23,16 @@ form.addEventListener('submit', event => {
     gallery.textContent = '';
     loadMoreBtn.style.display = 'none';
     fetchImages();
-
     form.reset();
 });
 
-async function getData() {
+async function getData(val) {
+
     axios.defaults.baseURL = "https://pixabay.com";
     return await axios.get('/api/', {
         params: {
             key: "41764698-0ccaaf72f9cf319226b6a04c5",
-            q: textArea.value,
+            q: val,
             image_type: "photo",
             orientation: "horizontal",
             safesearch: true,
@@ -44,18 +44,23 @@ async function getData() {
 
 async function fetchImages() {  
     try {
-        const response = await getData();
+        let valueOfTextarea = textArea.value;
+        const response = await getData(valueOfTextarea);
         const arrayOfImg = response.data.hits;
+
         if (arrayOfImg.length == 0) {
             return noImages();
         }
 
         createGallery(arrayOfImg);
+   
         if (arrayOfImg.length >= perPage) {
             loadMoreBtn.style.display = 'flex';
             loadMoreBtn.addEventListener('click', () => {
-                counter += 1;
-            })
+                loadMoreBtn.style.display = 'none';
+                loader.classList.add("loader");
+                getLoadMore(valueOfTextarea);
+            });
         }
 
     } catch(error) {
@@ -66,6 +71,23 @@ async function fetchImages() {
         loader.classList.remove("loader");
     }
 };
+
+async function getLoadMore(val) {
+    try {
+        counter += 1;
+        const response = await getData(val);
+        const arrayOfImg = response.data.hits;
+        createGallery(arrayOfImg);
+        loadMoreBtn.style.display = 'flex';
+
+    } catch(error) {
+        console.log(error);
+        const errText = error.message;
+        errorMessage(errText);
+    } finally {
+        loader.classList.remove("loader");
+    }
+}
 
 function noImages() {
     iziToast.error({
@@ -79,7 +101,7 @@ function noImages() {
 
 function errorMessage(err) {
     iziToast.error({
-      message: `Error: ${err}. Please try again!`,
+      message: `Error. ${err}. Please try again!`,
       position: "topRight",
       backgroundColor: "#EF4040",
       messageColor: '#fff',
