@@ -21,8 +21,9 @@ form.addEventListener('submit', event => {
     event.preventDefault();
     loader.classList.add("loader");
     gallery.textContent = '';
-    loadMoreBtn.style.display = 'none';
+    
     fetchImages();
+
     form.reset();
 });
 
@@ -48,8 +49,7 @@ async function fetchImages() {
         const response = await getData(valueOfTextarea);
         const arrayOfImg = response.data.hits;
         const totalPages = Math.ceil(response.data.totalHits / perPage);
-        console.log(totalPages);
-        console.log(response.data.totalHits);
+        
         if (arrayOfImg.length == 0) {
             return noImages();
         }
@@ -66,9 +66,7 @@ async function fetchImages() {
         }
 
     } catch(error) {
-        console.log(error);
-        const errText = error.message;
-        errorMessage(errText);
+        catchError(error);
     } finally {
         loader.classList.remove("loader");
     }
@@ -88,47 +86,13 @@ async function getLoadMore(val, num) {
         }
 
     } catch(error) {
-        console.log(error);
-        const errText = error.message;
-        errorMessage(errText);
+        catchError(error);
     } finally {
         loader.classList.remove("loader");
     }
 }
-
-function noImages() {
-    iziToast.error({
-      message: "Sorry, there are no images matching<br/>your search query. Please try again!",
-      position: "topRight",
-      backgroundColor: "#EF4040",
-      messageColor: '#fff',
-      iconUrl: icon,
-    });
-}
-
-function errorMessage(err) {
-    iziToast.error({
-      message: `Error. ${err}. Please try again!`,
-      position: "topRight",
-      backgroundColor: "#EF4040",
-      messageColor: '#fff',
-      iconUrl: icon,
-    });
-}
-
-function endResults() {
-    loadMoreBtn.style.display = 'none';
-    iziToast.error({
-        message: "We're sorry, but you've reached the end of search results.",
-        position: "topRight",
-        backgroundColor: "#EF4040",
-        messageColor: '#fff',
-        iconUrl: icon,
-      });
-};
   
 function createGallery(arr) {
-
     const galleryList = arr.map(
         ({ webformatURL, largeImageURL, tags, likes, views, comments, downloads }) => {
         return `
@@ -171,5 +135,40 @@ function createGallery(arr) {
     newLightBox.refresh();
 }
 
+function noImages() {
+    iziToast.error({
+      message: "Sorry, there are no images matching<br/>your search query. Please try again!",
+      position: "topRight",
+      backgroundColor: "#EF4040",
+      messageColor: '#fff',
+      iconUrl: icon,
+    });
+}
 
+function errorMessage(name, text) {
+    iziToast.error({
+      message: `${name}: ${text}. Please try again!`,
+      position: "topRight",
+      backgroundColor: "#EF4040",
+      messageColor: '#fff',
+      iconUrl: icon,
+    });
+}
+
+function endResults() {
+    iziToast.error({
+        message: "We're sorry, but you've reached the end of search results.",
+        position: "topRight",
+        backgroundColor: "#EF4040",
+        messageColor: '#fff',
+        iconUrl: icon,
+      });
+};
+
+function catchError(error) {
+    console.log(error);
+    const errName = error.name;
+    const errText = error.message;
+    errorMessage(errName, errText);
+}
   
