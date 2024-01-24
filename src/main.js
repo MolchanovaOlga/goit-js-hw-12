@@ -20,10 +20,10 @@ let perPage = 40;
 form.addEventListener('submit', event => {
     event.preventDefault();
     loader.classList.add("loader");
-    gallery.textContent = '';
+    gallery.innerHTML = '';
     
     fetchImages();
-
+    
     form.reset();
 });
 
@@ -43,7 +43,7 @@ async function getData(val) {
     });
 }
 
-async function fetchImages() {  
+async function fetchImages() { 
     try {
         const valueOfTextarea = textArea.value;
         const response = await getData(valueOfTextarea);
@@ -55,12 +55,13 @@ async function fetchImages() {
         }
 
         createGallery(arrayOfImg);
-   
+        
         if (arrayOfImg.length >= perPage) {
             loadMoreBtn.style.display = 'flex';
             loadMoreBtn.addEventListener('click', () => {
                 loadMoreBtn.style.display = 'none';
                 loader.classList.add("loader");
+                 
                 getLoadMore(valueOfTextarea, totalPages);
             });
         }
@@ -84,7 +85,6 @@ async function getLoadMore(val, num) {
             loadMoreBtn.style.display = 'none';
             return endResults();
         }
-
     } catch(error) {
         catchError(error);
     } finally {
@@ -145,6 +145,14 @@ function noImages() {
     });
 }
 
+function catchError(error) {
+    console.log(error);
+    const errName = error.name;
+    const errText = error.message;
+    errorMessage(errName, errText);
+}
+  
+
 function errorMessage(name, text) {
     iziToast.error({
       message: `${name}: ${text}. Please try again!`,
@@ -165,10 +173,3 @@ function endResults() {
       });
 };
 
-function catchError(error) {
-    console.log(error);
-    const errName = error.name;
-    const errText = error.message;
-    errorMessage(errName, errText);
-}
-  
