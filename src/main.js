@@ -14,56 +14,53 @@ const gallery = document.querySelector('.gallery');
 const loader = document.querySelector('span');
 const loadMoreBtn = document.querySelector('.load-more');
 
-let counter = 1;
-let perPage = 40;
+const objUrlParams =  {
+        key: "41764698-0ccaaf72f9cf319226b6a04c5",
+        q: '',
+        image_type: "photo",
+        orientation: "horizontal",
+        safesearch: true,
+        page: 1,
+        per_page: 40,
+    }
 
-form.addEventListener('submit', event => {
+form.addEventListener('submit', hendleSearch);
+
+function hendleSearch(event) {
     event.preventDefault();
     loader.classList.add("loader");
+    loadMoreBtn.style.display = 'none';
     gallery.innerHTML = '';
-    
+    objUrlParams.page = 1;
+
+    objUrlParams.q = textArea.value.trim();
+    if (!objUrlParams.q) {
+        return;
+    }
     fetchImages();
-    
+
     form.reset();
-});
+};
 
-async function getData(val) {
-
+async function getData() {
     axios.defaults.baseURL = "https://pixabay.com";
-    return await axios.get('/api/', {
-        params: {
-            key: "41764698-0ccaaf72f9cf319226b6a04c5",
-            q: val,
-            image_type: "photo",
-            orientation: "horizontal",
-            safesearch: true,
-            page: counter,
-            per_page: perPage,
-        }
-    });
+    return await axios.get('/api/', {params: objUrlParams});
 }
 
 async function fetchImages() { 
     try {
-        const valueOfTextarea = textArea.value;
-        const response = await getData(valueOfTextarea);
+        const response = await getData();
         const arrayOfImg = response.data.hits;
-        const totalPages = Math.ceil(response.data.totalHits / perPage);
         
-        if (arrayOfImg.length == 0) {
+        if (arrayOfImg.length == 0 || arrayOfImg.length == response.data.totalHits) {
+            loadMoreBtn.style.display = 'none';
             return noImages();
         }
 
         createGallery(arrayOfImg);
         
-        if (arrayOfImg.length >= perPage) {
+        if (arrayOfImg.length >= objUrlParams.per_page) {
             loadMoreBtn.style.display = 'flex';
-            loadMoreBtn.addEventListener('click', () => {
-                loadMoreBtn.style.display = 'none';
-                loader.classList.add("loader");
-                 
-                getLoadMore(valueOfTextarea, totalPages);
-            });
         }
 
     } catch(error) {
@@ -73,15 +70,26 @@ async function fetchImages() {
     }
 };
 
-async function getLoadMore(val, num) {
-    counter += 1;
+loadMoreBtn.addEventListener('click', handleLoadMore);
+
+function handleLoadMore() {
+    loadMoreBtn.style.display = 'none';
+    loader.classList.add("loader");
+    
+    objUrlParams.page += 1;
+    getLoadMore();
+}
+
+async function getLoadMore() {
     try {
-        const response = await getData(val);
+        const response = await getData();
         const arrayOfImg = response.data.hits;
+        
         createGallery(arrayOfImg);
         loadMoreBtn.style.display = 'flex';
-            
-        if (counter >= num) {
+
+        const totalPages = Math.ceil(response.data.totalHits / objUrlParams.per_page);
+        if (objUrlParams.page >= totalPages) {
             loadMoreBtn.style.display = 'none';
             return endResults();
         }
@@ -135,41 +143,38 @@ function createGallery(arr) {
     newLightBox.refresh();
 }
 
-function noImages() {
-    iziToast.error({
-      message: "Sorry, there are no images matching<br/>your search query. Please try again!",
-      position: "topRight",
-      backgroundColor: "#EF4040",
-      messageColor: '#fff',
-      iconUrl: icon,
-    });
-}
-
 function catchError(error) {
     console.log(error);
     const errName = error.name;
     const errText = error.message;
     errorMessage(errName, errText);
 }
-  
+
+const objErrorParams = {
+    position: "topRight",
+    backgroundColor: "#EF4040",
+    messageColor: '#fff',
+    iconUrl: icon,
+}
+
+function noImages() {
+    iziToast.error({
+      message: "Sorry, there are no images matching<br/>your search query. Please try again!",
+      ...objErrorParams,
+    });
+}
 
 function errorMessage(name, text) {
     iziToast.error({
       message: `${name}: ${text}. Please try again!`,
-      position: "topRight",
-      backgroundColor: "#EF4040",
-      messageColor: '#fff',
-      iconUrl: icon,
+      ...objErrorParams,
     });
 }
 
 function endResults() {
     iziToast.error({
         message: "We're sorry, but you've reached the end of search results.",
-        position: "topRight",
-        backgroundColor: "#EF4040",
-        messageColor: '#fff',
-        iconUrl: icon,
+        ...objErrorParams,
       });
 };
 
