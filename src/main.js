@@ -87,6 +87,7 @@ async function getLoadMore() {
         
         createGallery(arrayOfImg);
         loadMoreBtn.style.display = 'flex';
+        scroll();
 
         const totalPages = Math.ceil(response.data.totalHits / objUrlParams.per_page);
         if (objUrlParams.page >= totalPages) {
@@ -141,6 +142,12 @@ function createGallery(arr) {
     });
 
     newLightBox.refresh();
+}
+
+function scroll() {
+    const card = document.querySelector('.gallery-item');
+    const heightCard = card.getBoundingClientRect();
+    window.scrollBy(0, heightCard.height * 2);
 }
 
 function catchError(error) {
