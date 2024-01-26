@@ -91,7 +91,7 @@ button:focus {
   flex-wrap: wrap;
   gap: 24px;
   align-items: center;
-  width: 1128px;
+  max-width: 1128px;
   margin: 32px auto;
 }
 
@@ -100,7 +100,7 @@ button:focus {
   border: 1px solid #808080;
   border-radius: 4px;
   width: 360px;
-  flex-basis: calc((100% - 48px) / 3);
+  /*flex-basis: calc((100% - 48px) / 3);*/
 }
 
 

@@ -22,7 +22,12 @@ const objUrlParams =  {
         safesearch: true,
         page: 1,
         per_page: 40,
-    }
+}
+
+const newLightBox = new SimpleLightbox('.gallery a', {
+    captionsData: "alt",
+    captionDelay: 250,
+});
 
 form.addEventListener('submit', hendleSearch);
 
@@ -51,8 +56,8 @@ async function fetchImages() {
     try {
         const response = await getData();
         const arrayOfImg = response.data.hits;
-        
-        if (arrayOfImg.length == 0 || arrayOfImg.length == response.data.totalHits) {
+ 
+        if (arrayOfImg.length == 0) {
             loadMoreBtn.style.display = 'none';
             return noImages();
         }
@@ -136,18 +141,16 @@ function createGallery(arr) {
     }).join('');
     gallery.insertAdjacentHTML('beforeend', galleryList);
 
-    const newLightBox = new SimpleLightbox('.gallery a', {
-        captionsData: "alt",
-        captionDelay: 250,
-    });
-
     newLightBox.refresh();
 }
 
 function scroll() {
     const card = document.querySelector('.gallery-item');
     const heightCard = card.getBoundingClientRect();
-    window.scrollBy(0, heightCard.height * 2);
+    window.scrollBy({
+        top: heightCard.height * 2,
+        behavior: "smooth",
+    });
 }
 
 function catchError(error) {
